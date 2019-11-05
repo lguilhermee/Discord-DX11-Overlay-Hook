@@ -1,8 +1,21 @@
-# Discord-Overlay-Hook
-Discord Overlay Hook for drawing and some other feature.
 
-# What i can do with this ?
-- You can implement in your software to draw on top of another program window. Or For another example, get input from your keys.
+![](https://github.com/lguilhermee/Discord-Overlay-Hook/blob/master/Images/logo.png)
 
-## Development
-- This all you need for implementing on your project. I Will push a complete standlone Visual studio project later. 
+### Features
+- Ready to Inject
+- Pattern Scan
+- Get Keys Input
+- Discord Overlay PresentScene Hook (You can draw on top of games)
+- Imgui Ready
+
+### DEMO
+- ![](https://github.com/lguilhermee/Discord-Overlay-Hook/raw/master/Images/demo.png)
+
+### HOW TO USE
+1. Compile project with Visual Studio
+2. Use a DLL injector. (ProcessHacker for example)
+3. Choose a Target and Inject. 
+
+### Libraries
+- https://github.com/ocornut/imgui
+- Discord
