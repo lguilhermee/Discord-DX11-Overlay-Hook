@@ -7,7 +7,10 @@
 
 uintptr_t Discord::GetDiscordModuleBase()
 {
+    // This is static because we only need to get once.
     static uintptr_t discordModuleBase = 0;
+
+    // If its false, we use GetModuleHandle to grab the Module Base adress. 
     if (!discordModuleBase)
         discordModuleBase = (uintptr_t)GetModuleHandleA("DiscordHook64.dll");
 
@@ -16,24 +19,32 @@ uintptr_t Discord::GetDiscordModuleBase()
 
 bool Discord::CreateHook(uintptr_t originalPresent, uintptr_t hookFunction, uintptr_t pOriginal)
 {
+
+    // Static because we only need to get once.
     static uintptr_t addrCreateHook = NULL;
 
+    // If its false, its mean that its our first time executing this function, so we need to grab its adress on memory.
     if (!addrCreateHook)
     {
-        addrCreateHook = Helper::PatternScan(GetDiscordModuleBase(),
-                                             "40 53 55 56 57 41 54 41 56 41 57 48 83 EC 60");
+        // This function Search a sequences of bytes in memory. The sequence of bytes we found by reversing engineering the DiscordHook64.dll
+        addrCreateHook = Helper::PatternScan(GetDiscordModuleBase(),"40 53 55 56 57 41 54 41 56 41 57 48 83 EC 60");
 
         #ifdef DEVELOPER
         printf("CreateHook: 0x%p\n", addrCreateHook);
         #endif
     }
 
+    // If this is false, its mean, that we could't find the function, that could be for alot of reasons, one of them is that the DLL could be updated, function changed or removed.
     if (!addrCreateHook)
         return false;
 
+    // This is our function Template. We find this by reverse engineering the DiscordHook64.dll
+    // Its easy, it to understand. Its return a uint64_t, the calling type its __fastcall, and it has 3 parameters.
+    // For understand fastcall you can use msdn: https://docs.microsoft.com/pt-br/cpp/cpp/fastcall?view=vs-2019
     using CreateHook_t = uint64_t(__fastcall*)(LPVOID, LPVOID, LPVOID*);
-    CreateHook_t fnCreateHook = (CreateHook_t)addrCreateHook;
+    auto fnCreateHook = (CreateHook_t)addrCreateHook; // Here we set the adress that we found with our pattern scanning.
 
+    // Then, we just call the function as we usually do.
     return fnCreateHook((void*)originalPresent, (void*)hookFunction, (void**)pOriginal) == 0 ? true : false;
 }
 
@@ -56,7 +67,7 @@ bool Discord::EnableHook(uintptr_t pTarget, bool toggle)
         return false;
 
     using EnableHook_t = uint64_t(__fastcall*)(LPVOID, bool);
-    EnableHook_t fnEnableHook = (EnableHook_t)addrEnableHook;
+    auto fnEnableHook = (EnableHook_t)addrEnableHook;
 
     return fnEnableHook((void*)pTarget, toggle) == 0 ? true : false;
 }
