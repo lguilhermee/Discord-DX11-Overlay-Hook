@@ -198,18 +198,18 @@ bool Discord::HookFunction(uintptr_t originalFunction, uintptr_t hookedFunction,
     if (DISCORD.CreateHook(originalFunction, hookedFunction, pOriginalPresent))
     {
         #ifdef DEVELOPER
-        printf("Hook created with sucess \n.");
+        printf("Hook created with success \n.");
         #endif
         if (DISCORD.EnableHook(originalFunction, true))
         {
             #ifdef DEVELOPER
-            printf("Hook enabled with sucess. \n.");
+            printf("Hook enabled with success. \n.");
             #endif
 
             if (DISCORD.EnableHookQue())
             {
                 #ifdef DEVELOPER
-                printf("Hook qued with sucess. \n.");
+                printf("Hook queued with success. \n.");
                 #endif
                 return true;
             }
