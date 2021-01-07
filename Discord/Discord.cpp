@@ -5,6 +5,17 @@
 
 #define DEVELOPER
 
+uintptr_t ResolveRelative(_In_ const uintptr_t adressPointer, _In_ const ULONG offsetCount,
+                                  _In_ const ULONG sizeOfInstruction)
+{
+    const ULONG_PTR adressToResolve = adressPointer;
+    const LONG totalBytesFromSpecifiedAdress = *(PLONG)(adressToResolve + offsetCount);
+    const uintptr_t resultFinal = (adressToResolve + sizeOfInstruction + totalBytesFromSpecifiedAdress
+    );
+
+    return resultFinal;
+}
+
 uintptr_t Discord::GetDiscordModuleBase()
 {
     // This is static because we only need to get once.
@@ -27,7 +38,7 @@ bool Discord::CreateHook(uintptr_t originalPresent, uintptr_t hookFunction, uint
     if (!addrCreateHook)
     {
         // This function Search a sequences of bytes in memory. The sequence of bytes we found by reversing engineering the DiscordHook64.dll
-        addrCreateHook = Helper::PatternScan(GetDiscordModuleBase(),"40 53 55 56 57 41 54 41 56 41 57 48 83 EC 60");
+        addrCreateHook = ResolveRelative(Helper::PatternScan(GetDiscordModuleBase(),"E8 ? ? ? ? 85 C0 74 53"),0x1,0x5);
 
         #ifdef DEVELOPER
         printf("CreateHook: 0x%p\n", addrCreateHook);
@@ -55,7 +66,7 @@ bool Discord::EnableHook(uintptr_t pTarget, bool toggle)
     if (!addrEnableHook)
     {
         addrEnableHook = Helper::PatternScan(GetDiscordModuleBase(),
-                                             "48 89 5C 24 ? 48 89 6C 24 ? 48 89 74 24 ? 57 41 56 41 57 48 83 EC 20 33 F6 8B FA"
+                                             "41 56 56 57 53 48 83 EC 28 49 89 CE BF ? ? ? ? 31 C0 F0 0F B1 3D ? ? ? ? 74 2E 31 DB 48 8B 35 ? ? ? ? 66 2E 0F 1F 84 00 ? ? ? ? 31 C9 48 83 FB 1F 0F 97 C1 FF D6 48 83 C3 01 31 C0 F0 0F B1 3D ? ? ? ? 75 E5 48 83 3D ? ? ? ? ? 74 40 4D 85 F6 74 42 8B 15 ? ? ? ? B8 ? ? ? ? 48 85 D2 74 70 48 8B 0D ? ? ? ? 48 83 C1 20 48 F7 DA 31 DB 66 0F 1F 44 00 ? 4C 39 71 E0 74 4A 48 83 C1 38 48 83 C3 FF 48 39 DA 75 ED EB 45 B8 ? ? ? ? EB 3E 83 3D ? ? ? ? ? 74 33 B9 ? ? ? ? 31 C0 31 D2 66 90 48 8B 1D ? ? ? ? 80 24 0B FB"
         );
 
         #ifdef DEVELOPER
@@ -78,8 +89,7 @@ bool Discord::EnableHookQue()
 
     if (!addrEnableHookQueu)
     {
-        addrEnableHookQueu = Helper::PatternScan(GetDiscordModuleBase(),
-                                                 "48 89 5C 24 ? 48 89 6C 24 ? 48 89 7C 24 ? 41 57");
+        addrEnableHookQueu = ResolveRelative(Helper::PatternScan(GetDiscordModuleBase(),"E8 ? ? ? ? 85 C0 74 60"),0x1,0x5);
 
         #ifdef DEVELOPER
         printf("EnableHookQueu: 0x%p\n", addrEnableHookQueu);
@@ -102,7 +112,7 @@ short Discord::GetAsyncKeyState(const int vKey)
     if (!addrGetAsyncKeyState)
     {
         addrGetAsyncKeyState = Helper::PatternScan(GetDiscordModuleBase(),
-                                                   "40 53 48 83 EC 20 8B D9 FF 15 ? ? ? ?");
+                                                   "56 48 83 EC 20 89 CE");
 
         #ifdef DEVELOPER
         printf("GetAsyncKeyState: 0x%p\n", addrGetAsyncKeyState);
@@ -125,7 +135,7 @@ short Discord::SetCursorPos(int x, int y)
     if (!addrSetCursorPos)
     {
         addrSetCursorPos = Helper::PatternScan(GetDiscordModuleBase(),
-                                               "44 0F B6 05 ? ? ? ? 45 84 C0");
+                                               "8A 05 ? ? ? ? 84 C0 74 12");
 
         #ifdef DEVELOPER
         printf("SetCursorPos: 0x%p\n", addrSetCursorPos);
@@ -149,7 +159,7 @@ bool Discord::GetCursorPos(LPPOINT lpPoint)
     if (!addrGetCursorPos)
     {
         addrGetCursorPos = Helper::PatternScan(GetDiscordModuleBase(),
-                                               "40 53 48 83 EC 20 48 8B D9 FF 15 ? ? ? ? 0F B6 15 ? ? ? ?");
+                                               "56 48 83 EC 20 48 89 CE FF 15 ? ? ? ? 8A 15");
 
         #ifdef DEVELOPER
         printf("GetCursorPos: 0x%p\n", addrGetCursorPos);
@@ -172,7 +182,7 @@ HCURSOR Discord::SetCursor(HCURSOR hCursor)
     if (!addrSetCursor)
     {
         addrSetCursor = Helper::PatternScan(GetDiscordModuleBase(),
-                                            "40 53 48 83 EC 20 0F B6 05 ? ? ? ? 48 8B D9 84 C0 74 4F");
+                                            "56 57 48 83 EC 28 48 89 CE 8A 05 ? ? ? ? 48 8B 15");
 
         #ifdef DEVELOPER
         printf("SetCursor: 0x%p\n", addrSetCursor);
