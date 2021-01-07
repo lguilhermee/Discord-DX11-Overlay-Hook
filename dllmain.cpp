@@ -125,7 +125,7 @@ void StartHooking()
 
     // PresentScene Adress.
     auto presentSceneAdress = Helper::PatternScan(Discord::GetDiscordModuleBase(),
-                                                  "48 89 5C 24 ? 48 89 74 24 ? 57 48 83 EC 20 48 8B D9 41 8B F8");
+                                                  "56 57 53 48 83 EC 30 44 89 C6");
 
 
     // Hook Present scene, and enable it.
