@@ -190,7 +190,7 @@ HCURSOR Discord::SetCursor(HCURSOR hCursor)
     }
 
     if (!addrSetCursor)
-        return false;
+        return 0;
 
     using SetCursor_t = HCURSOR(__fastcall*)(HCURSOR);
     auto fnSetCursor = (SetCursor_t)addrSetCursor;
